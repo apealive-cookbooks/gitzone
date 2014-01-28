@@ -14,8 +14,8 @@ default['gitzone']['user_ssh_pub_keys'] = nil
 
 #TODO loop over users, domains managed from data bag
 #   iterate over to create per $user zone.cfg for domains defined in data bag
-default['gitzone']['user'] = ""
-default['gitzone']['domains'] = %w{ }
+default['gitzone']['user'] = "gitzone"
+default['gitzone']['domains'] = %w{ example123.net example123.com }
 
 
 #TODO Wrap all BIND cookbook attributes used in recipe to GITZONE attributes
