@@ -46,7 +46,6 @@ end
 
 
 # extend named conf (how only once?)
-bind_named_cfg = bind_named_cfg + ".gitzone"
 ruby_block "include-zone-in-named.conf.local" do
   only_if { ::File.exist?(bind_named_cfg)}
   Chef::Log.warn("ruby block run cfg to use: " + bind_named_cfg.to_s)
