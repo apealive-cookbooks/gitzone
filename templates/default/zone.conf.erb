@@ -1,0 +1,12 @@
+
+<% @domains.each do |domain| -%>
+zone "<%= domain %>" {
+        type master;
+        notify yes;
+        file "<%= node[:gitzone][:bind_cache_dir] %>/<%= node[:gitzone][:user] %>/<%= domain %>.conf";
+        allow-transfer { transfer; };
+};
+<% end -%>
+
+
+

@@ -1,0 +1,23 @@
+;; Zone file for <%= :domain %>
+;;
+$ORIGIN <%= :domain %>.
+$TTL 1D ;1 day
+
+<%= :domain %>.
+@       IN      SOA     ns.<%= :domain %>. hostmaster.<%= :domain %>(
+                201401010 ; AUTO_INCREMENT
+                3H      ; refresh (3 hours)
+                1H      ; retry (1 hour)
+                4W      ; expire (4 weeks)
+                1D )    ; minimum (1 day)
+
+                NS      ns.<%= :domain %>.   ; name server
+;               MX      0  mail.<%= :domain %>    ; mail server
+
+;; SERVERS IN DOMAIN
+;ns             A       REPLACE_WITH_NS_IP
+;               TXT     "Primary NS"
+<% @host_entries.each do |hostname,ipaddress| -%>
+<%= :hostname %>  A   <%= :ipaddress %>
+<% end -%>
+

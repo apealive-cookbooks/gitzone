@@ -1,0 +1,73 @@
+# -*- perl -*-
+#
+# gitzone configuration file
+#
+# this file is parsed as Perl code and you can use the following variables:
+#   $user - name of the user gitzone is invoked by
+#   $repo - name of the repository gitzone is invoked for
+
+# directory where the zone files are copied to (no trailing slash)
+# there should be one directory for each user here chowned to them
+$zone_dir = '/var/bind';
+
+# commands
+$git = '/usr/bin/git';
+$named_checkzone = '/usr/sbin/named-checkzone';
+$rndc = '/usr/sbin/rndc';
+
+# update-record command: 1 = enabled, 0 = disabled
+$update_record = 1;
+
+# unrestricted includes: 1 = enabled, 0 = disabled (default)
+# by default a restriction applies to $INCLUDE file names,
+# they should be prefixed with <repo>/ and nothing else is allowed in parent dirs
+$unrestricted_includes = 0;
+
+# max depth to follow INCLUDED_BY files
+$max_depth = 256;
+# output verbosity (0..3)
+$verbosity = 0;
+#$verbosity = $user eq 'admin' ? 3 : 0;
+
+# parameters for rndc reload: class & view
+$class = 'IN';
+# default view of the zones (optional)
+$default_view = '';
+#$default_view = $repo;
+
+# $zones defines which files in a user's repo can be loaded as zone files.
+#
+# You can define which view a zone belongs to, this can be
+#  - a string for a single view
+#  - an array for multiple views
+#  - or 1 to use the $default_view
+# The view is used as a parameter for rndc reload.
+#
+# The basename of the files listed must be identical to the zone name.
+#
+# If a file name starts with a / it's treated as a BIND config file
+# and every zone listed there is allowed for the user.
+# Note: at the moment /* */ comments are not recognized, use // instead on the zone line to comment it out.
+#
+# The -default key is tried first for every user, then it's merged with the user-specific config.
+
+$repos = {
+#  -default => {
+#    "/etc/bind/repos/$repo.conf" => 1,               # allow every zone from this file, use the default view for them
+#  },
+#  user1 => { # /etc/bind/repos/user1.conf is loaded first and merged with the config below, as specified in -default above
+#    'example.com' => 1,                              # allow example.com, use the default view for it
+#    'example.net' => 'extern',                       # allow example.net, use the extern view for it
+#    'example.org' => [qw(view1 view2)],              # allow example.org, use both view1 & view2 for it
+#    local => {                                       # local/ dir in the repo
+#      '/etc/bind/users/user1-local.conf' => 'local', # allow every zone from this file, use the local view for them
+#      'example.net' => 'local',                      # allow example.net, use the local view for it
+#    },
+#    'foo/bar/baz' => {                               # foo/bar/baz/ dir in the repo
+#      'example.org' => 1,                            # allow example.org, use the default view for it
+#    },
+#  },
+  -default => {
+    "/etc/bind/repos/$repo.conf" => 1,               # allow every zone from this file, use the default view for them
+  },
+}
