@@ -31,17 +31,20 @@ execute "gitzone-make-install" do
     command cmd
     ignore_failure false
     action :nothing
-    notifies :run, "execute[gitzone-make-install]", :immediately
+    notifies :run, "execute[fix-gitzone-sudordnc]", :immediately
     #not_if { ::File.exists?("#{node['gitzone']['preffix']}/bin/gitzone-shell") }
 end
 
-# fix gitzone script 
+# fix gitzone script
 # - to run rndc with sudo privileges as bind user
-execute "gitzone-make-install" do
+# - to run rndc reload only 
+#   - (w/class&zone etc it returns: rndc: 'reload' failed: not found)
+#   - may slow-down things if many zones is configured
+execute "fix-gitzone-sudordnc" do
     gitzone_script = ::File.join(node['gitzone']['preffix'], 'bin','gitzone')
-    cmd =  "sed -i 's/\$rndc reload/sudo -u #{node['bind']['user']} \$rndc reload/ #{:gitzone_script}"
+    cmd =  "sed -i 's:\$rndc reload.*\$_:sudo -u #{node['bind']['user']} sh -c \"\$rndc reload\":' #{gitzone_script}"
     command cmd
-    ignore_failure false
-    action :nothing
+    #ignore_failure false
+    action :run
     only_if { ::File.exists?(gitzone_script) }
 end

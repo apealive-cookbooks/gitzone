@@ -1,7 +1,8 @@
 #RECIPE configure users & repos
 ## 
 
-zone_dir = ::File.join(node['gitzone']['home'], node['gitzone']['user'], 'zones', node['gitzone']['user'])
+zonesdir = ::File.join(node['gitzone']['home'], node['gitzone']['user'], 'zones')
+zone_dir = ::File.join(zonesdir, node['gitzone']['user'])
 
 group node['gitzone']['group'] do
     action :create
@@ -87,7 +88,7 @@ end
 # gitzone-install
 directory zone_dir do
   owner node['gitzone']['user']
-  group node['bind']['user']
+  group node['gitzone']['group']
   mode "0750"
   recursive true
   action :create
@@ -96,16 +97,25 @@ end
 
 # init gitzone git repository
 bash "gitzone-git-init" do
-   cwd zone_dir
+   cwd zonesdir
    user node['gitzone']['user']
    group node['gitzone']['group']
    code <<-EOF
-        git init .
+        git init #{node['gitzone']['user']}
+        cd $_
+        git branch -b 
+        touch README.md
+        git add *
+        git commit -m "kickoff"
         git config receive.denyCurrentBranch ignore
+        #git config -f ~/.gitconfig user.name "#{node['gitzone']['user']}"
+        #git config -f ~/.gitconfig user.email "#{node['gitzone']['user']}@`hostname -f`"
+        #git config --global user.name "#{node['gitzone']['user']}"
+        #git config --global user.email "#{node['gitzone']['user']}@`hostname -f`"
         git config user.name "#{node['gitzone']['user']}"
         git config user.email "#{node['gitzone']['user']}@`hostname -f`"
      EOF
-    not_if { ::Dir.exists?("#{node['gitzone']['home']}/zones/#{node['gitzone']['user']}/.git") }
+    not_if { ::Dir.exists?(::File.join(zone_dir,'.git')) }
 end
 
 # link hooks
@@ -127,7 +137,18 @@ template "/etc/gitzone.conf" do
     #variables({
         #:domains => node['gitzone']['domains'],
         #})
+    notifies :run, "execute[fix-gitzone-conf]", :immediately
     action :create
+end
+
+# fix gitzone.conf
+execute "fix-gitzone-conf" do
+    gitzone_conf = "/etc/gitzone.conf"
+    cmd =  "sed -i 's:^\$zone_dir.*:\$zone_dir = \"#{node['gitzone']['bind_cache_dir']}\";:' /etc/gitzone.conf"
+    command cmd
+    ignore_failure false
+    action :run
+    only_if { ::File.exists?(gitzone_conf) }
 end
 
 # create /etc/sudoers.d/gitzone with rule allowing to run "rndc reload"

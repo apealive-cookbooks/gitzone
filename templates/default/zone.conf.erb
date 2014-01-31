@@ -3,7 +3,7 @@
 zone "<%= domain %>" {
         type master;
         notify yes;
-        file "<%= node[:gitzone][:bind_cache_dir] %>/<%= node[:gitzone][:user] %>/<%= domain %>.conf";
+        file "<%= node[:gitzone][:bind_cache_dir] %>/<%= node[:gitzone][:user] %>/<%= domain %>";
         allow-transfer { transfer; };
 };
 <% end -%>

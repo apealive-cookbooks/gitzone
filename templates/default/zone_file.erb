@@ -1,23 +1,28 @@
-;; Zone file for <%= :domain %>
+;; Zone file for <%= @domain %>
 ;;
-$ORIGIN <%= :domain %>.
+$ORIGIN <%= @domain %>.
 $TTL 1D ;1 day
 
-<%= :domain %>.
-@       IN      SOA     ns.<%= :domain %>. hostmaster.<%= :domain %>(
-                201401010 ; AUTO_INCREMENT
-                3H      ; refresh (3 hours)
-                1H      ; retry (1 hour)
-                4W      ; expire (4 weeks)
-                1D )    ; minimum (1 day)
+;<%= @domain %>.
+@       IN      SOA     ns.<%= @domain %>. hostmaster.<%= @domain %>(
+                201401010 ;AUTO_INCREMENT
+                3H      ;refresh (3 hours)
+                1H      ;retry (1 hour)
+                4W      ;expire (4 weeks)
+                1D )    ;minimum (1 day)
 
-                NS      ns.<%= :domain %>.   ; name server
-;               MX      0  mail.<%= :domain %>    ; mail server
+                NS      ns.<%= @domain %>.   ; name server
+;               MX      0  mail.<%= @domain %>    ; mail server
 
-;; SERVERS IN DOMAIN
+;; SERVERS IN @domain
 ;ns             A       REPLACE_WITH_NS_IP
 ;               TXT     "Primary NS"
-<% @host_entries.each do |hostname,ipaddress| -%>
-<%= :hostname %>  A   <%= :ipaddress %>
+;3rd-domain     CNAME   REPLACE_WITH_3rd-domain.
+;2nd-domain     NS      REPLACE_WITH_MY_FQDN.
+<% @host_entries.each_with_index do |item, index| -%>
+<% if index == 0 %>
+ns              A       <%= item[1] %>
+<% end %>
+<%= item[0] %>  A       <%= item[1] %>
 <% end -%>
 
