@@ -1,8 +1,7 @@
 
 zone_cfg = ::File.join(node['gitzone']['bind_repos_dir'], "#{node['gitzone']['user']}.conf")
-#TODO: read from attributes
 bind_named_cfg = ::File.join(node['bind']['sysconfdir'], "named.conf.local")
-bind_cache_dir_gitzone = ::File.join(node['gitzone']['bind_cache_dir'], node['gitzone']['user'])
+bind_cache_dir_gitzone = ::File.join(node['bind']['vardir'], node['gitzone']['user'])
 
 
 # add gitzone user to bind group || or-and create it
@@ -13,9 +12,8 @@ group node['bind']['group'] do
 end
 
 
-# create gitzone cache dir
+# create gitzone dir in bind var/cache dir
 directory bind_cache_dir_gitzone do
-    #TODO: place bind cache dir as attribute (differ with distribution)
     owner node['gitzone']['user']
     group node['bind']['user']
     mode '0750'
@@ -31,7 +29,6 @@ directory node['gitzone']['bind_repos_dir'] do
 end
 
 # create gitzone zone conf
-#TODO: This should do .each if array
 template zone_cfg do
     source "zone.conf.erb"
     owner node['gitzone']['user']
@@ -40,12 +37,13 @@ template zone_cfg do
     variables({
         :domains => node['gitzone']['domains'],
         })
+    #only creates a new files if they do not exist yet, otherwise zone files are not modified !!
     action :create
     notifies :create, "ruby_block[include-zone-in-named.conf.local]", :delayed
 end
 
 
-# extend named conf (how only once?)
+# extend named conf to load gitzone zone conf
 ruby_block "include-zone-in-named.conf.local" do
   only_if { ::File.exist?(bind_named_cfg)}
   Chef::Log.warn("ruby block run cfg to use: " + bind_named_cfg.to_s)

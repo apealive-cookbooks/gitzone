@@ -1,4 +1,5 @@
 ;; Zone file for <%= @domain %>
+;; Updated: TEMPLATE
 ;;
 $ORIGIN <%= @domain %>.
 $TTL 1D ;1 day
@@ -23,6 +24,7 @@ $TTL 1D ;1 day
 <% if index == 0 %>
 ns              A       <%= item[1] %>
 <% end %>
-<%= item[0] %>  A       <%= item[1] %>
+<%= item[0] %>          A       <%= item[1] %>
 <% end -%>
+
 

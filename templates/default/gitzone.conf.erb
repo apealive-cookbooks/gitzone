@@ -8,7 +8,7 @@
 
 # directory where the zone files are copied to (no trailing slash)
 # there should be one directory for each user here chowned to them
-$zone_dir = '/var/bind';
+$zone_dir = '<%= @zonedir %>';
 
 # commands
 $git = '/usr/bin/git';
@@ -59,14 +59,15 @@ $repos = {
 #    'example.com' => 1,                              # allow example.com, use the default view for it
 #    'example.net' => 'extern',                       # allow example.net, use the extern view for it
 #    'example.org' => [qw(view1 view2)],              # allow example.org, use both view1 & view2 for it
-#    local => {                                       # local/ dir in the repo
+#  local => {                                       # local/ dir in the repo
 #      '/etc/bind/users/user1-local.conf' => 'local', # allow every zone from this file, use the local view for them
 #      'example.net' => 'local',                      # allow example.net, use the local view for it
 #    },
-#    'foo/bar/baz' => {                               # foo/bar/baz/ dir in the repo
+#  'foo/bar/baz' => {                               # foo/bar/baz/ dir in the repo
 #      'example.org' => 1,                            # allow example.org, use the default view for it
 #    },
 #  },
+  <%= @repos =%>
   -default => {
     "/etc/bind/repos/$repo.conf" => 1,               # allow every zone from this file, use the default view for them
   },

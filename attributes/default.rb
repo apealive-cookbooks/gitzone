@@ -1,27 +1,26 @@
-
+#gitzone deployment options
 default['gitzone']['preffix'] = "/usr"
-default['gitzone']['group'] = "gitzone"
 default['gitzone']['home'] = "/home"
 default['gitzone']['repo_dir'] = "/srv/repos/git"
-default['gitzone']['repo_url'] = "https://github.com/dyne/gitzone.git"
 default['gitzone']['bind_repos_dir'] = "/etc/bind/repos"
+#gitzone source repo
+default['gitzone']['repo_url'] = "https://github.com/dyne/gitzone.git"
 
 
-#TODO MAKE IT HASH too loop over user that may modify
-#TODO "loop over if multiple keys"
-#if user pub key is nil? Then generate pub/private keys.
+#system user to manage gitzone repos/files?
+default['gitzone']['user'] = "gitzone"
+default['gitzone']['group'] = "gitzone"
+#system admin (must exist on system)
+default['gitzone']['admin'] = nil
+
+#gitzone user pub keys. generate pub/private keys if nil
 default['gitzone']['user_ssh_pub_keys'] = nil
 
-#TODO loop over users, domains managed from data bag
-#   iterate over to create per $user zone.cfg for domains defined in data bag
-default['gitzone']['user'] = "gitzone"
-default['gitzone']['domains'] = %w{ example123.net example123.com }
 
+#managed domains
+default['gitzone']['domains'] = %w{ example.com example.net }
 
-#TODO Wrap all BIND cookbook attributes used in recipe to GITZONE attributes
-default['gitzone']['bind_cache_dir'] = '/var/cache/bind'
+#repos to be configured in gitzone.conf $repos
+default['gitzone']['conf']['repos'] = ""
 
-#Bad practice (unimportant dependencies)
-#default['gitzone']['zone_cfg'] = "#{node['gitzone']['bind_repos_dir']}/#{node['gitzone']['user']}.conf"
-#default['gitzone']['zone_dir'] = "#{node[:gitzone][:home]}/zones/#{node[:gitzone][:user]}"
 

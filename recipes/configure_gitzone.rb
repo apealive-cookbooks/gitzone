@@ -3,6 +3,10 @@
 
 zonesdir = ::File.join(node['gitzone']['home'], node['gitzone']['user'], 'zones')
 zone_dir = ::File.join(zonesdir, node['gitzone']['user'])
+if !node['gitzone']['admin'].nil?
+    gitzone_admin_home = ::File.join(node['gitzone']['home'], node['gitzone']['admin'])
+end
+
 
 group node['gitzone']['group'] do
     action :create
@@ -21,7 +25,7 @@ user node['gitzone']['user'] do
 end
 
 # deploy ssh key
-# code pasted from community chef-ssh-keys cookbook
+# copy paste from community chef-ssh-keys cookbook
 ssh_keys = node['gitzone']['user_ssh_pub_keys']
 home_dir = ::File.join(node['gitzone']['home'], node['gitzone']['user'])
 
@@ -41,7 +45,7 @@ if !ssh_keys
         Chef::Log.info("SSH pub keys not specified, generating")
         cwd ssh_dir
         code <<-EOF
-            ssh-keygen -t rsa -N "" -q -C "#{node['gitzone']['user']}@#{node.fqdn}" -f #{node['gitzone']['user']}_ssh.key
+            ssh-keygen -t rsa -N "" -q -C "#{node['gitzone']['user']}@#{node['fqdn']}" -f #{node['gitzone']['user']}_ssh.key
             chmod og-rwx #{ssh_dir}
             #TODO: make and ena/dis attribute from this
             #allow edit auth.keys
@@ -101,19 +105,17 @@ bash "gitzone-git-init" do
    user node['gitzone']['user']
    group node['gitzone']['group']
    code <<-EOF
+        git config -f /home/#{node['gitzone']['user']}/.gitconfig user.name "#{node['gitzone']['user']}"
+        git config -f /home/#{node['gitzone']['user']}/.gitconfig user.email "#{node['gitzone']['user']}@`hostname -f`"
+        chown user #{node['gitzone']['user']}.#{node['gitzone']['group']} /home/#{node['gitzone']['user']}/.gitconfig
+        ###
         git init #{node['gitzone']['user']}
         cd $_
-        git branch -b 
-        touch README.md
-        git add *
+        git branch -b master
+        echo ".old" > .gitignore
+        git add * ;
         git commit -m "kickoff"
         git config receive.denyCurrentBranch ignore
-        #git config -f ~/.gitconfig user.name "#{node['gitzone']['user']}"
-        #git config -f ~/.gitconfig user.email "#{node['gitzone']['user']}@`hostname -f`"
-        #git config --global user.name "#{node['gitzone']['user']}"
-        #git config --global user.email "#{node['gitzone']['user']}@`hostname -f`"
-        git config user.name "#{node['gitzone']['user']}"
-        git config user.email "#{node['gitzone']['user']}@`hostname -f`"
      EOF
     not_if { ::Dir.exists?(::File.join(zone_dir,'.git')) }
 end
@@ -134,28 +136,19 @@ template "/etc/gitzone.conf" do
     owner node['gitzone']['user']
     group node['gitzone']['group']
     mode '0750'
-    #variables({
-        #:domains => node['gitzone']['domains'],
-        #})
-    notifies :run, "execute[fix-gitzone-conf]", :immediately
+    variables({
+        :zonedir => node['bind']['vardir'],
+        :repos => node['gitzone']['conf']['repos']
+        })
+    #notifies :run, "execute[fix-gitzone-conf]", :immediately
     action :create
-end
-
-# fix gitzone.conf
-execute "fix-gitzone-conf" do
-    gitzone_conf = "/etc/gitzone.conf"
-    cmd =  "sed -i 's:^\$zone_dir.*:\$zone_dir = \"#{node['gitzone']['bind_cache_dir']}\";:' /etc/gitzone.conf"
-    command cmd
-    ignore_failure false
-    action :run
-    only_if { ::File.exists?(gitzone_conf) }
 end
 
 # create /etc/sudoers.d/gitzone with rule allowing to run "rndc reload"
 sudo 'gitzone' do
   group      "%#{node['gitzone']['group']}"
-  runas     "#{node['bind']['user']}"
-  commands  ['/usr/bin/rndc *']
+  runas     node['bind']['user']
+  commands  ['/bin/sh -c /usr/sbin/rndc *']
   nopasswd  true
-  #commands  ['/usr/bin/rndc reload *']
 end
+
