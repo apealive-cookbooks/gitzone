@@ -1,5 +1,10 @@
+# Cookbook Name:: gitzone
+# Recipe:: configure_gitzone
+#
+# Copyright (C) 2013 Petr Michalec (epcim@apealive.net)
+# 
+
 #RECIPE configure users & repos
-## 
 
 zonesdir = ::File.join(node['gitzone']['home'], node['gitzone']['user'], 'zones')
 zone_dir = ::File.join(zonesdir, node['gitzone']['user'])
