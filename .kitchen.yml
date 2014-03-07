@@ -3,7 +3,7 @@ driver:
   name: vagrant
 
 provisioner:
-  name: chef_solo
+  name: chef_zero
 
 platforms:
   - name: ubuntu-12.04
@@ -12,5 +12,12 @@ platforms:
 suites:
   - name: default
     run_list:
+      - recipe[bind]
       - recipe[gitzone::default]
+      - recipe[minitest-handler]
+    driver_config:
+        vm_hostname: gitzone.example.com
     attributes:
+        system:
+          short_hostname: gitzone
+          domain_name: gitzone.example.com
