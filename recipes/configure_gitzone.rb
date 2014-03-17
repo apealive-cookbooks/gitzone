@@ -43,28 +43,30 @@ directory ::File.join(home_dir,'.ssh') do
 end
 
 ## generate keys if not defined
-if !ssh_keys
-    #package 'openssh'
-    ssh_dir = ::File.join(home_dir, '.ssh')
-    bash "generate ssh keys" do
-        Chef::Log.info("SSH pub keys not specified, generating")
-        cwd ssh_dir
-        code <<-EOF
-            ssh-keygen -t rsa -N "" -q -C "#{node['gitzone']['user']}@#{node['fqdn']}" -f #{node['gitzone']['user']}_ssh.key
-            chmod og-rwx #{ssh_dir}
-            #TODO: make and ena/dis attribute from this
-            #allow edit auth.keys
-            touch #{ssh_dir}/authorized_keys_edit_allowed
-            # --
-            chown -R #{node['gitzone']['user']} #{ssh_dir}
-            chgrp -R #{node['gitzone']['group']} #{ssh_dir}
-            chmod -R 400 #{ssh_dir}/*
-         EOF
-        action :run
-    end
-    pub_key = File.join(home_dir, '.ssh',"#{node['gitzone']['user']}_ssh.key.pub" )
-    if File.exist?(pub_key)
-        File.open(pub_key).each do |pub|
+ssh_dir = ::File.join(home_dir, '.ssh')
+bash "generate ssh keys" do
+    Chef::Log.info("SSH pub keys not specified, generating")
+    cwd ssh_dir
+    code <<-EOF
+        ssh-keygen -t rsa -N "" -q -C "#{node['gitzone']['user']}@#{node['fqdn']}" -f #{node['gitzone']['user']}_ssh.key
+        chmod og-rwx #{ssh_dir}
+        #TODO: make and ena/dis attribute from this
+        #allow edit auth.keys
+        touch #{ssh_dir}/authorized_keys_edit_allowed
+        # --
+        chown -R #{node['gitzone']['user']} #{ssh_dir}
+        chgrp -R #{node['gitzone']['group']} #{ssh_dir}
+        chmod -R 400 #{ssh_dir}/*
+     EOF
+    action :run
+    not_if { ::File.exist?(::File.join(ssh_dir,"#{node['gitzone']['user']}_ssh.key"))}
+end
+pub_key = File.join(home_dir, '.ssh',"#{node['gitzone']['user']}_ssh.key.pub" )
+if File.exist?(pub_key)
+    File.open(pub_key).each do |pub|
+        if !ssh_keys.nil? && ssh_keys.length > 0
+            ssh_keys += Array(pub.delete "\n")
+        else
             ssh_keys = Array(pub.delete "\n")
         end
     end

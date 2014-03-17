@@ -89,8 +89,9 @@ end
 
 bash "git_commit_zone_file" do
     cwd zone_clon
-    user zone_user
-    group zone_group
+    #FIXME
+    #user zone_user
+    #group zone_group
     code <<-EOF
         #check bind is already running (together with retry/delay)
         /etc/init.d/bind9 status || exit 1;
@@ -100,6 +101,10 @@ bash "git_commit_zone_file" do
         git pull --rebase origin master;
         git push origin master 2>&1;
         git pull;
+        #FIXing file rights .. due execution with root rights
+        chown -R #{node['gitzone']['user']}.#{node['gitzone']['group']} #{zone_clon};
+        chown -R #{node['gitzone']['user']}.#{node['gitzone']['group']} #{zone_repo};
+        chown -R #{node['gitzone']['user']}.#{node['bind']['group']} #{node['bind']['vardir']}/#{node['gitzone']['user']};
      EOF
     retries 10
     retry_delay 10          #wait for bind service to start

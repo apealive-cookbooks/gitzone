@@ -1,5 +1,6 @@
 
 require 'minitest/autorun'
+require 'minitest/spec'
 
 class TestGitzone < MiniTest::Chef::TestCase
     include MiniTest::Chef::Assertions
@@ -27,7 +28,6 @@ class TestGitzone < MiniTest::Chef::TestCase
 end
 
 
-require 'minitest/spec'
 
 describe 'gitzone::configure_zones' do
     include MiniTest::Chef::Assertions
