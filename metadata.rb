@@ -4,7 +4,7 @@ maintainer_email 'epcim@apealive.net'
 license          'All rights reserved'
 description      'Installs/Configures gitzone'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '1.0.6'
+version          '1.0.7'
 
 recipe            "gitzone::default", "Install and fully configure gitzone using the install and configure recipes"
 recipe            "gitzone::install", "Install gitzone scripts"
@@ -19,4 +19,4 @@ attribute "gitzone/user",
   :description => "Gitzone user system account",
   :default => "gitzone"
 
-#TODO fill desc. about other attributes
+#TODO document other attributes
