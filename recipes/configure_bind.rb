@@ -58,7 +58,7 @@ ruby_block "include-zone-in-named.conf" do
   Chef::Log.warn("ruby block run cfg to use: " + bind_named_cfg.to_s)
   block do
     fe = Chef::Util::FileEdit.new(bind_named_cfg)
-    fe.insert_line_if_no_match(/include #{zone_cfg}/, "include \"#{zone_cfg}\";")
+    fe.insert_line_if_no_match(/include \"#{zone_cfg}*/, "include \"#{zone_cfg}\";")
     fe.write_file
   end
   action :create
