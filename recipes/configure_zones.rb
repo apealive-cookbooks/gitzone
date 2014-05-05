@@ -70,7 +70,7 @@ node['gitzone']['domains'].each do |dom|
                 #FIXME: search for nodes in the |dom|
                 nodes = search(:node, "domain:#{dom}","chef_environment:#{node.environment}")
                 nodes.each do |n|
-                    fe.insert_line_if_no_match(/^#{n['name']}/, "#{n['name']}    A   #{n['ipaddress']}")
+                    fe.insert_line_if_no_match(/^#{n['system']['hostname']}/, "#{n['system']['hostname']}     A   #{n['ipaddress']}")
                 end
             end
             fe.search_file_replace_line(/^;; Updated:.*/, ";; Updated: #{stamp}")
