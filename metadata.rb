@@ -28,4 +28,4 @@ attribute "gitzone/user",
   :description => "Gitzone user system account",
   :default => "gitzone"
 
-#TODO fill desc. about other attributes
+#TODO document other attributes
