@@ -1,17 +1,16 @@
 
 zone_cfg = ::File.join(node['gitzone']['bind_repos_dir'], "#{node['gitzone']['user']}.conf")
 bind_named_cfg = ::File.join(node['bind']['sysconfdir'], "named.conf")
-bind_rndc_cfg = ::File.join(node['bind']['sysconfdir'], "rndc.conf")
 bind_cache_dir_gitzone = ::File.join(node['bind']['vardir'], node['gitzone']['user'])
 
-# add rndc.conf
-node.set['bind']['included_files'] = (node[:bind][:included_files]+%w(rndc.conf)).uniq!.sort!
-node.set['bind']['options'] = (node[:bind][:options]+['default-key "rndc-key";']).uniq!.sort!
-template bind_rndc_cfg do
+
+# add rndc configuration used by gitzone - creates gitzone-rndc.conf and set include from named.conf
+template "gitzone-rndc.conf" do
+    path ::File.join(node['bind']['sysconfdir'], "gitzone-rndc.conf")
     action :create
     not_if{ ::File.exist?(name)}
 end
-
+node.set['bind']['included_files'] = (["gitzone-rndc.conf"] + node[:bind][:included_files]).uniq.sort
 
 # add gitzone user to bind group || or-and create it
 group node['bind']['group'] do
