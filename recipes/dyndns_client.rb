@@ -5,7 +5,9 @@ server_root_pub_key=File.open("/root/.ssh/id_rsa").first if File.exist?('/root/.
 if Chef::Config[:solo] and not chef_solo_search_installed?
   Chef::Log.warn("This recipe uses search. Chef Solo does not support search unless you install the chef-solo-search cookbook.")
 else
-  gitzone_servers = search(:node, "role:#{node[:gitzone][:role]}")
+
+
+  gitzone_servers = search(:node, "#{node[:gitzone][:search_query]}")
   gitzone_servers.each do |n|
     #check pub key already configured -> deploy scripted update
     if n[:gitzone][:user_ssh_pub_keys].include?(server_root_pub_key)

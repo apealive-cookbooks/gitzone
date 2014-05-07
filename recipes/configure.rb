@@ -1,7 +1,7 @@
 # RECIPE configure
 ## Imitate the function of gitzone-install script
 
-#FIXME: check bind is allready installed
+#TODO: check bind is allready installed (NOTE: for now bind cookbook is dependency)
 #package "bind"
 
 include_recipe "#{cookbook_name}::configure_gitzone"
