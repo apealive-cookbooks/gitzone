@@ -2,7 +2,6 @@
 # Recipe:: configure_gitzone
 #
 # Copyright (C) 2013 Petr Michalec (epcim@apealive.net)
-# 
 
 #RECIPE configure users & repos
 
@@ -158,4 +157,3 @@ sudo 'gitzone' do
   commands  ['/bin/sh -c /usr/sbin/rndc *']
   nopasswd  true
 end
-

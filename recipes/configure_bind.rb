@@ -5,12 +5,16 @@ bind_cache_dir_gitzone = ::File.join(node['bind']['vardir'], node['gitzone']['us
 
 
 # add rndc configuration used by gitzone - creates gitzone-rndc.conf and set include from named.conf
+gitzone_rndc_cfg = ::File.join(node['bind']['sysconfdir'], "gitzone-rndc.conf")
 template "gitzone-rndc.conf" do
-    path ::File.join(node['bind']['sysconfdir'], "gitzone-rndc.conf")
+    path = gitzone_rndc_cfg
     action :create
-    not_if{ ::File.exist?(name)}
+    not_if{ ::File.exist?(path)}
 end
-node.set['bind']['included_files'] = (["gitzone-rndc.conf"] + node[:bind][:included_files]).uniq.sort
+if ::File.exist?(gitzone_rndc_cfg)
+    # once template is run
+    node.set['bind']['included_files'] = (["gitzone-rndc.conf"] + node[:bind][:included_files]).uniq.sort
+end
 
 # add gitzone user to bind group || or-and create it
 group node['bind']['group'] do
