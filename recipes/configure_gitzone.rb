@@ -7,10 +7,7 @@
 
 zonesdir = ::File.join(node['gitzone']['home'], node['gitzone']['user'], 'zones')
 zone_dir = ::File.join(zonesdir, node['gitzone']['user'])
-if !node['gitzone']['admin'].nil?
-    gitzone_admin_home = ::File.join(node['gitzone']['home'], node['gitzone']['admin'])
-end
-
+home_dir = ::File.join(node['gitzone']['home'], node['gitzone']['user'])
 
 group node['gitzone']['group'] do
     action :create
@@ -28,10 +25,17 @@ user node['gitzone']['user'] do
     #password# Run: openssl passwd -1 "theplaintextpassword"
 end
 
-# deploy ssh key
-# copy paste from community chef-ssh-keys cookbook
+# deploy ssh pub keys to authorized_keys file
 ssh_keys = node['gitzone']['user_ssh_pub_keys']
-home_dir = ::File.join(node['gitzone']['home'], node['gitzone']['user'])
+if Chef::Config[:solo] and not chef_solo_search_installed?
+  Chef::Log.warn("This recipe uses search. Chef Solo does not support search unless you install the chef-solo-search cookbook.")
+else
+    # search for gitzone managed hosts
+    search(:node, node[:gitzone][:search_query_managed_nodes] + " AND root_ssh_pub_keys:['' TO * ]").each do |n|
+        node.set[:gitzone][:managed_nodes_pub_keys] += n[:root_ssh_pub_keys]    # unless n[:root_ssh_pub_keys].nil?
+    end
+    ssh_keys = (ssh_keys + node[:gitzone][:managed_nodes_pub_keys]).uniq.sort
+end
 
 ## Creating ".ssh" directory
 directory ::File.join(home_dir,'.ssh') do
@@ -74,7 +78,7 @@ end
 if !ssh_keys.nil? && ssh_keys.length > 0
       authorized_keys_file = ::File.join(home_dir,'.ssh','authorized_keys')
 
-      if File.exist?(authorized_keys_file)
+      if File.exist?(authorized_keys_file) and !node[:gitzone][:rewrite_authorized_keys_file]
         Chef::Log.info("Appending to existing authorized keys")
         # Loading existing keys
         File.open(authorized_keys_file).each do |line|

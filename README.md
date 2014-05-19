@@ -5,6 +5,9 @@ The gitzone scripts are developed by the [dyne.org](https://github.com/dyne/gitz
 
 NOTE: This cookbook is in DRAFT stage. Even the best practices are applied some conceptual failures may exist.
 
+NOTE: In the next version will be defined LWRPs to create gitzone_managed zones. There is no significant impact for the early 
+users but for sure all of the recipies will be simplified (so consider any rewrite/rewind).
+
 Pull requests & suggestions are welcome.
 
 ## Supported Platforms
@@ -16,7 +19,6 @@ Tested on:
 
 Acknowledgement:
 * On centos 6.4 is small issue with git < 1.7. It's described here: https://github.com/dyne/gitzone/issues/1
-* At the present time, there is the small inconvenience that zone files are not deployed, until manual push from cloned repository.
 
 ## Attributes
 

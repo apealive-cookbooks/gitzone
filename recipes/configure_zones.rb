@@ -32,7 +32,8 @@ end
 
 #TODO: generate reverse zone files
 # create zone file (if not exist)
-node['gitzone']['domains'].each do |dom|
+managed_domains = (node['gitzone']['domains'] + [node[:system][:domain_name]]).uniq
+managed_domains.each do |dom|
     zone_file = ::File.join(zone_clon, dom)
     #FIXME: properly get node hostname
     if node['system']['short_hostname'].nil?
@@ -94,7 +95,7 @@ bash "git_commit_zone_file" do
     #group zone_group
     code <<-EOF
         #check bind is already running (together with retry/delay)
-        /etc/init.d/bind9 status || exit 1;
+        service #{node['bind']['service_name']} status || exit 4;
         git checkout master;
         git add `ls *|grep -v '.old$'`;
         git commit -m "modified zone_file";

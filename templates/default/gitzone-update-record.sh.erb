@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# avoid manual changes - script is generated
+for i in `for i in $(hostname -A ; hostname -a); do echo $i|sed -e "s/\.$(hostname -d)//" ;done | sort -u`; do
+    ssh -o StrictHostKeyChecking=false <%=@gitzone_server_ssh_uri%> update-record $(hostname -d) $i A;
+done;
