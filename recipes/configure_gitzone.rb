@@ -33,7 +33,7 @@ else
     # search for gitzone managed hosts
     #search(:node, node[:gitzone][:search_query_managed_nodes] + " AND root_ssh_pub_keys:['' TO * ]").each do |n|
     search(:node, node[:gitzone][:search_query_managed_nodes] + " AND root_ssh_pub_keys:*").each do |n|
-        node.set[:gitzone][:managed_nodes_pub_keys] += n[:root_ssh_pub_keys] #unless n[:root_ssh_pub_keys].nil?
+        node.set[:gitzone][:managed_nodes_pub_keys] = node[:gitzone][:managed_nodes_pub_keys] + n[:root_ssh_pub_keys] #unless n[:root_ssh_pub_keys].nil?
     end
     ssh_keys = (ssh_keys + node[:gitzone][:managed_nodes_pub_keys]).uniq.sort
 end

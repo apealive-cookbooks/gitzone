@@ -6,6 +6,7 @@
 
 # Version 1.0.25 (2014-05-25)
 - fixed search for nodes and root_ssh_pub_keys
+- fixed management of managed host attribute
 
 # Version 1.0.23 (2014-05-19)
 - fixed bugs #1, #2, #3
