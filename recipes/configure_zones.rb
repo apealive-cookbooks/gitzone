@@ -68,7 +68,6 @@ node['gitzone']['domains'].each do |dom|
             if Chef::Config[:solo]
                     Chef::Log.warn("#{cookbook_name} uses search - you are running a solo - thus skipping resolver configuration.")
             else
-                #FIXME: search for nodes in the |dom|
                 nodes = search(:node, "domain:#{dom}","chef_environment:#{node.environment}")
                 nodes.each do |n|
                     fe.insert_line_if_no_match(/^#{n['system']['hostname']}/, "#{n['system']['hostname']}     A   #{n['ipaddress']}")
@@ -90,7 +89,7 @@ end
 
 bash "git_commit_zone_file" do
     cwd zone_clon
-    #FIXME
+    #FIXME - ownership & execution under gitzone user
     #user zone_user
     #group zone_group
     code <<-EOF
