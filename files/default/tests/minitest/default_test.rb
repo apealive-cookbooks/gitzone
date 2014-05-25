@@ -22,7 +22,7 @@ class TestGitzone < MiniTest::Chef::TestCase
     def test_zonefile_ownership
         require 'etc'
         assert File.stat(zone_file).uid == Etc.getpwnam("#{node['gitzone']['user']}").uid
-        assert File.stat(zone_file).gid == Etc.getpwnam("#{node['gitzone']['group']}").gid
+        assert File.stat(zone_file).gid == Etc.getpwnam("#{node['bind']['group']}").gid
     end
 
 end
