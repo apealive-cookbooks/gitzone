@@ -27,7 +27,7 @@ default['gitzone']['domains'] = %w{ example.com example.net }
 
 # search query gitzone node & managed nodes
 default['gitzone']['search_query'] = 'recipes:gitzone\:\:default'   # used by dyndns recipe at client node
-default['gitzone']['search_query_managed_nodes'] = '*:*'   # used by gitzone node to populate managed_nodes_pub_keys
+default['gitzone']['search_query_managed_nodes'] = 'environment:*'   # used by gitzone node to populate managed_nodes_pub_keys
 
 # repos to be configured in gitzone.conf $repos
 default['gitzone']['conf']['repos'] = ""

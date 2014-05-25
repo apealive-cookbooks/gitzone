@@ -31,8 +31,9 @@ if Chef::Config[:solo] and not chef_solo_search_installed?
   Chef::Log.warn("This recipe uses search. Chef Solo does not support search unless you install the chef-solo-search cookbook.")
 else
     # search for gitzone managed hosts
-    search(:node, node[:gitzone][:search_query_managed_nodes] + " AND root_ssh_pub_keys:['' TO * ]").each do |n|
-        node.set[:gitzone][:managed_nodes_pub_keys] += n[:root_ssh_pub_keys]    # unless n[:root_ssh_pub_keys].nil?
+    #search(:node, node[:gitzone][:search_query_managed_nodes] + " AND root_ssh_pub_keys:['' TO * ]").each do |n|
+    search(:node, node[:gitzone][:search_query_managed_nodes] + " AND root_ssh_pub_keys:*").each do |n|
+        node.set[:gitzone][:managed_nodes_pub_keys] += n[:root_ssh_pub_keys] #unless n[:root_ssh_pub_keys].nil?
     end
     ssh_keys = (ssh_keys + node[:gitzone][:managed_nodes_pub_keys]).uniq.sort
 end
