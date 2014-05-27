@@ -6,7 +6,7 @@ if !server_root_pub_key.nil? and  server_root_pub_key.length > 0
     node.set[:root_ssh_pub_keys] = node[:root_ssh_pub_keys] ? (node[:root_ssh_pub_keys]+[server_root_pub_key]).uniq.sort : [server_root_pub_key]
 end
 
-if Chef::Config[:solo] and not chef_solo_search_installed?
+if Chef::Config[:solo]
   Chef::Log.warn("This recipe uses search. Chef Solo does not support search unless you install the chef-solo-search cookbook.")
 else
 
