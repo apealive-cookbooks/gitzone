@@ -27,7 +27,7 @@ end
 
 # deploy ssh pub keys to authorized_keys file
 ssh_keys = node['gitzone']['user_ssh_pub_keys']
-if Chef::Config[:solo] and not chef_solo_search_installed?
+if Chef::Config[:solo]
   Chef::Log.warn("This recipe uses search. Chef Solo does not support search unless you install the chef-solo-search cookbook.")
 else
     # search for gitzone managed hosts
