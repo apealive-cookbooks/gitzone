@@ -11,6 +11,7 @@ platforms:
 
 suites:
   - name: default
+    sudo: true
     run_list:
       - recipe[bind]
       - recipe[gitzone::default]
@@ -21,3 +22,6 @@ suites:
         system:
           short_hostname: gitzone
           domain_name: gitzone.example.com
+        authorization:
+            sudo:
+                passwordless: true

@@ -43,7 +43,7 @@ describe 'gitzone::configure_zones' do
         #zone_file = ::File.join(node['bind']['vardir'], node['gitzone']['user'],node['gitzone']['domains'].first)
         #zone_file = ::File.join(node['bind']['vardir'], node['gitzone']['user'],node['gitzone']['domains'].first)
         #assert File.exist?(zone_file)
-        file("#{node['bind']['vardir']}/#{node['gitzone']['user']}/#{node['gitzone']['domains'].first}").must_exist.with(:owner, node['gitzone']['user']).and(:group, node['gitzone']['group'])
+        file("#{node['bind']['vardir']}/#{node['gitzone']['user']}/#{node['gitzone']['domains'].first}").must_exist.with(:owner, node['gitzone']['user']).and(:group, node['bind']['group'])
     end
 
 end

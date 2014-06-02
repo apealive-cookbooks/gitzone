@@ -4,6 +4,11 @@
 - add test cases
 - test support for multiple OS
 
+
+# Version 1.0.28 (2014-06-02)
+- fixed build essential dependency
+- added kitchen suit test
+
 # Version 1.0.25 (2014-05-25)
 - fixed search for nodes and root_ssh_pub_keys
 - fixed management of managed host attribute
