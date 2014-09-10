@@ -73,7 +73,7 @@ node['gitzone']['domains'].each do |dom|
                     fe.insert_line_if_no_match(/^#{n['system']['hostname']}/, "#{n['system']['hostname']}     A   #{n['ipaddress']}")
                 end
             end
-            fe.search_file_replace_line(/^;; Updated:.*/, ";; Updated: #{stamp}")
+            #TODO this practically update file each run - avoid that - fe.search_file_replace_line(/^;; Updated:.*/, ";; Updated: #{stamp}")
             fe.write_file
         end
         only_if { File.exist?(zone_file)}
