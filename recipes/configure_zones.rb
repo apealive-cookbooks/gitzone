@@ -70,7 +70,7 @@ node['gitzone']['domains'].each do |dom|
             else
                 nodes = search(:node, "domain:#{dom}") #,"chef_environment:#{node.environment}")
                 nodes.each do |n|
-                    fe.insert_line_if_no_match(/^#{n['system']['hostname']}/, "#{n['system']['hostname']}     A   #{n['ipaddress']}")
+                    fe.insert_line_if_no_match(/^#{n['hostname']}/, "#{n['hostname']}     A   #{n['ipaddress']}")
                 end
             end
             #TODO this practically update file each run - avoid that - fe.search_file_replace_line(/^;; Updated:.*/, ";; Updated: #{stamp}")
