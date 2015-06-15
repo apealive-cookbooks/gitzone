@@ -1,0 +1,39 @@
+image: epcim/drone-chef-ci:dind
+
+env:
+    - CI=drone
+    - LABREPO=https://git.vums.blueit/chef-cookbooks
+
+script:
+    # initialize CI env
+    - source /root/.bash_profile
+    - eval "$(chef shell-init bash)"
+    - export LANG="en_US.UTF-8"
+    - export SSL_CERT_FILE=/opt/chefdk/embedded/ssl/certs/cacert.pem
+    - chef exec berks install
+    - wrapdocker
+
+    # run tests
+    - chef exec kitchen test
+
+    # run lint checkers
+    - chef exec knife cookbook test --all -o .
+    - chef exec foodcritic "-f any -f ~FC014 -f ~FC015 -f ~FC024 -f ~FC043" .
+    - chef exec rubocop -a || exit 0 #autofix
+    - chef exec rubocop .
+    # This should be just `chef exec rspec .` when a ChefDK bug is fixed.
+    #- chef exec ruby -S rspec test/unit/spec
+
+notify:
+  email:
+        recipients:
+        #- petr_michalec@cz.ibm.com
+
+  slack:
+    webhook_url: 'https:#hooks.slack.com/services/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'
+    username: 'drone'
+    channel: '#lab-gtshub'
+    on_started: false
+    on_success: true
+    on_failure: false
+

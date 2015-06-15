@@ -1,27 +1,54 @@
 ---
+# https://docs.chef.io/config_yml_kitchen.html
+
 driver:
   name: vagrant
+  name: docker
+  use_sudo: false
+  socket: <%= ENV.fetch('DOCKER_HOST', 'unix:///var/run/docker.sock') %>
 
 provisioner:
   name: chef_zero
+  cookbook_path: ['.','test/cookbooks','cookbooks']
+  #data_bags_path: test/chef/data_bags
+  #encrypted_data_bag_secret_key_path: test/chef/encrypted_data_bag_secret
 
 platforms:
   - name: ubuntu-12.04
-  - name: centos-6.4
+  - name: ubuntu-14.04
+  - name: centos-6.5
+  - name: centos-7.1
 
 suites:
   - name: default
-    sudo: true
     run_list:
-      - recipe[bind]
-      - recipe[gitzone::default]
-      - recipe[minitest-handler]
+        # CI
+        - recipe[system::update_package_list]      # workaround to get packages updated
+
+
+        # main
+        - recipe[bind]
+        - recipe[gitzone::default]
+
+        # tests
+        - recipe[minitest-handler]
+
     driver_config:
-        vm_hostname: gitzone.example.com
+        vm_hostname: gitzone.ci.lab
+
     attributes:
-        system:
-          short_hostname: gitzone
-          domain_name: gitzone.example.com
+        chef_client:
+            config:
+                #log_level: ":debug"
+                file_atomic_update: true
+                #ssl_verify_mode: ":verify_peer"
+        #system:
+            #short_hostname: gitzone
+            #domain_name: gitzone.ci.lab
         authorization:
             sudo:
+                groups: ['admin','sysadmin']
+                users: ['vagrant', 'kitchen']
                 passwordless: true
+                include_sudoers_d: true
+
