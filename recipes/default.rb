@@ -21,7 +21,7 @@ include_recipe 'bind'
 include_recipe 'git'
 include_recipe 'sudo'
 include_recipe 'zsh'
-include_recipe 'system'
+#include_recipe 'system'
 
 include_recipe "#{cookbook_name}::install"
 include_recipe "#{cookbook_name}::configure"
