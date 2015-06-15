@@ -23,6 +23,7 @@ depends 'sudo'
 depends 'zsh'
 depends 'system'
 depends 'build-essential'
+depends 'simple_iptables'
 
 attribute 'gitzone/user',
           display_name: 'gitzone user',
