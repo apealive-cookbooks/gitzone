@@ -12,15 +12,17 @@
 # Changes expected:
 # - not like having $HOME/zones/$username dir. May change to just zones/.
 
-## INSTALL GENERIC SW DEPENDENCIES
-# %w(git zsh).each do |pkg|
-# package pkg
-# end
+## INSTALL GENERIC DEPENDENCIES
+ %w(make).each do |pkg|
+ package pkg
+ end
+include_recipe 'git'
+
+# TODO, review zsh include
+include_recipe 'zsh'
 
 include_recipe 'bind'
-include_recipe 'git'
 include_recipe 'sudo'
-include_recipe 'zsh'
 #include_recipe 'system'
 
 include_recipe "#{cookbook_name}::install"
