@@ -9,7 +9,7 @@ cookbook 'git'
 cookbook 'sudo'
 
 # INTEGRATION
-cookbook 'minitest-handler'
+#cookbook 'minitest-handler'
 
 cookbook 'simple_iptables', git: 'https://github.com/rtkmhart/cookbook-simple-iptables.git'
 # DEPRECATED
