@@ -31,7 +31,7 @@ suites:
         - recipe[gitzone::default]
 
         # tests
-        - recipe[minitest-handler]
+        #- recipe[minitest-handler]
 
     driver_config:
         vm_hostname: gitzone.ci.lab
