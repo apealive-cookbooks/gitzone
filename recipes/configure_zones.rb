@@ -13,15 +13,22 @@ if !node['gitzone']['admin'].nil? && !node['gitzone']['user_ssh_pub_keys'].nil? 
   zone_user = node['gitzone']['admin']
 end
 
-# commit first in zone_repo (ie: to avoid fail later)
-execute 'gitzone-make-install' do
+# FIXME, commit first in zone_repo (ie: to avoid fail later)
+execute 'fix-init-zone-repo' do
 # cwd gitzone_repo
-  cmd =  "cd #{zone_repo}"
-  cmd << '; echo ";# INIT \n" >> CHANGELOG.md'
-  #cmd << '; git config --global user.email "noreply@'+node[:fqdn].to_s+'"'
-  #cmd << '; git config --global user.name "gitzone"'
-  cmd << '; git add CHANGELOG.md; git commit -m "init changelog;"'
-  command cmd
+  command <<-EOF  cd #{zone_repo}
+                  ; echo ";# INIT \n" >> CHANGELOG.md
+                  ; git config -f /home/#{node['gitzone']['user']}/.gitconfig user.name "#{node['gitzone']['user']}"
+                  ; git config -f /home/#{node['gitzone']['user']}/.gitconfig user.email "#{node['gitzone']['user']}@`hostname -f`"
+                  ; chown user #{node['gitzone']['user']}.#{node['gitzone']['group']} /home/#{node['gitzone']['user']}/.gitconfig
+                  ; git add CHANGELOG.md
+                  ; git commit -m "init changelog"
+                  #; git branch -b master
+                  #; echo ".old" > .gitignore
+                  #; git add * ;
+                  #; git commit -m "kickoff"
+                  #; git config receive.denyCurrentBranch ignore
+  EOF
   ignore_failure true
   action :run
   only_if { ::File.exist?(zone_repo) }
@@ -40,6 +47,8 @@ git zone_clon do
   # ignore failures to be able clone empty repository
   ignore_failure true
   # #notifies :run, "execute[gitzone-make-install]", :immediately
+  retries 10
+  retry_delay 10          # wait for bind service to start
 end
 
 # TODO: generate reverse zone files
@@ -66,6 +75,9 @@ managed_domains.each do |dom|
         }
         )
     action :create
+    retries 10
+    retry_delay 10          # wait for bind service to start
+    only_if { ::File.exist?(zone_clon) }
   end
 end
 
@@ -88,6 +100,8 @@ node['gitzone']['domains'].each do |dom|
       # TODO this practically update file each run - avoid that - fe.search_file_replace_line(/^;; Updated:.*/, ";; Updated: #{stamp}")
       fe.write_file
     end
+    retries 10
+    retry_delay 10          # wait for bind service to start
     only_if { File.exist?(zone_file) }
     action :run
     notifies :run, 'bash[git_commit_zone_file]', :delayed
@@ -118,6 +132,7 @@ bash 'git_commit_zone_file' do
      EOF
   retries 10
   retry_delay 10          # wait for bind service to start
+  only_if { ::File.exist?(zone_clon) }
   ignore_failure false
   action :nothing
 end
