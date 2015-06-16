@@ -16,7 +16,8 @@ end
 # FIXME, commit first in zone_repo (ie: to avoid fail later)
 execute 'fix-init-zone-repo' do
 # cwd gitzone_repo
-  command <<-EOF  cd #{zone_repo}
+  command <<-EOF
+                  cd #{zone_repo}
                   ; echo ";# INIT \n" >> CHANGELOG.md
                   ; git config -f /home/#{node['gitzone']['user']}/.gitconfig user.name "#{node['gitzone']['user']}"
                   ; git config -f /home/#{node['gitzone']['user']}/.gitconfig user.email "#{node['gitzone']['user']}@`hostname -f`"
