@@ -32,6 +32,7 @@ execute 'gitzone-make-install' do
   # not_if { ::File.exists?("#{node['gitzone']['preffix']}/bin/gitzone-shell") }
 end
 
+
 # fix gitzone script
 # - to run rndc with sudo privileges as bind user
 # - to run rndc reload only

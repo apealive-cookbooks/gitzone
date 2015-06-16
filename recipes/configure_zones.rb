@@ -13,6 +13,19 @@ if !node['gitzone']['admin'].nil? && !node['gitzone']['user_ssh_pub_keys'].nil? 
   zone_user = node['gitzone']['admin']
 end
 
+# commit first in zone_repo (ie: to avoid )
+execute 'gitzone-make-install' do
+# cwd gitzone_repo
+  cmd == "cd #{gitzone_repo}"
+  cmd << '; echo ";# INIT \n" >> CHANGELOG.md'
+  cmd << '; git add CHANGELOG.md; git commit -m "init changelog;"'
+  command cmd
+  ignore_failure false
+  action :run
+  only_if { ::File.exist?(zone_repo) }
+end
+
+
 # check out the latest gitzone repo
 git zone_clon do
   only_if { ::File.exist?(zone_repo) }
