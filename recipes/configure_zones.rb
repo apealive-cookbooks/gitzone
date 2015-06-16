@@ -16,7 +16,7 @@ end
 # commit first in zone_repo (ie: to avoid )
 execute 'gitzone-make-install' do
 # cwd gitzone_repo
-  cmd == "cd #{gitzone_repo}"
+  cmd =  "cd #{gitzone_repo}"
   cmd << '; echo ";# INIT \n" >> CHANGELOG.md'
   cmd << '; git add CHANGELOG.md; git commit -m "init changelog;"'
   command cmd
