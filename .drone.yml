@@ -5,6 +5,15 @@ env:
     - LABREPO=https://git.vums.blueit/chef-cookbooks
 
 script:
+    # INIT CLORS
+    #256 - git clone https://github.com/seebi/dircolors-solarized ~/.dircolors
+    - git clone https://github.com/huyz/dircolors-solarized ~/.dircolors
+    - ln -s ~/.dircolors-solarized ~/.dir_colors
+    - echo 'eval `dircolors ~/.dircolors`' >> .profile
+    - eval `dircolors ~/.dircolors`
+    #export TERM=xterm-256color        # for common 256 color terminals (e.g. gnome-terminal)
+    #export TERM=screen-256color       # for a tmux -2 session (also for screen)
+
     # initialize CI env
     - source /root/.bash_profile
     - eval "$(chef shell-init bash)"
