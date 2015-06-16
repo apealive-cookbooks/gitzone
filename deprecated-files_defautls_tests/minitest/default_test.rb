@@ -1,7 +1,12 @@
 
+## This is minitest for gitzone cookbook
+## it contains TestGitzone test case class
+#
 require 'minitest/autorun'
 require 'minitest/spec'
+require 'etc'
 
+# TestGitzone class
 class TestGitzone < MiniTest::Chef::TestCase
   include MiniTest::Chef::Assertions
   include MiniTest::Chef::Context
@@ -15,14 +20,13 @@ class TestGitzone < MiniTest::Chef::TestCase
     '/etc/gitzone.conf'
   end
 
-  def test_gitzone_conf_exist
-    assert File.exist?(gitzone_conf)
-  end
-
-  def test_zonefile_ownership
-    require 'etc'
+  def test_ownership
     assert File.stat(zone_file).uid == Etc.getpwnam("#{node['gitzone']['user']}").uid
     assert File.stat(zone_file).gid == Etc.getpwnam("#{node['bind']['group']}").gid
+  end
+
+  def test_gitzone_conf_exist
+    assert File.exist?(gitzone_conf)
   end
 end
 

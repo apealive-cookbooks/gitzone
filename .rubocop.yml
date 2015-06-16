@@ -1,0 +1,7 @@
+LineLength:
+    # tmp workaround, set to 115 finally
+    Max: 300
+SingleSpaceBeforeFirstArg:
+    Exclude:
+    - metadata.rb
+

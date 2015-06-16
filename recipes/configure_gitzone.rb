@@ -83,9 +83,7 @@ if !ssh_keys.nil? && ssh_keys.length > 0
     Chef::Log.info('Appending to existing authorized keys')
     # Loading existing keys
     File.open(authorized_keys_file).each do |line|
-      if line.start_with?('ssh')
-        ssh_keys += Array(line.delete "\n")
-      end
+      line.start_with?('ssh') && ssh_keys += Array(line.delete "\n")
     end
     ssh_keys.uniq!
   end

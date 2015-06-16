@@ -8,14 +8,14 @@ zone_group = node['gitzone']['group']
 # a little tweak
 # use node:gitzone/admin account to clone repo (assume ssh_keys are configured properly)
 if !node['gitzone']['admin'].nil? && !node['gitzone']['user_ssh_pub_keys'].nil? && node['gitzone']['user_ssh_pub_keys'].length > 0
-  # TODO: Rather get the home path from env.
+  # TODO, Rather get the home path from env.
   zone_clon = ::File.join(node['gitzone']['home'], node['gitzone']['admin'], 'zones-wc-' + node['gitzone']['user'])
   zone_user = node['gitzone']['admin']
 end
 
 # FIXME, commit first in zone_repo (ie: to avoid fail later)
 execute 'fix-init-zone-repo' do
-# cwd gitzone_repo
+  # cwd gitzone_repo
   command <<-EOF
                   cd #{zone_repo}
                   ; echo ";# INIT \n" >> CHANGELOG.md
@@ -34,7 +34,6 @@ execute 'fix-init-zone-repo' do
   action :run
   only_if { ::File.exist?(zone_repo) }
 end
-
 
 # check out the latest gitzone repo
 git zone_clon do
@@ -57,12 +56,12 @@ end
 managed_domains = (node['gitzone']['domains'] + [node[:system][:domain_name]]).uniq
 managed_domains.each do |dom|
   zone_file = ::File.join(zone_clon, dom)
-  # FIXME: properly get node hostname
-  if node['system']['short_hostname'].nil?
-    short_hostname = node['name']
-  else
-    short_hostname = node['system']['short_hostname']
-  end
+  # FIXME, properly get node hostname
+  # if node['system']['short_hostname'].nil?
+  #  short_hostname = node['name']
+  # else
+  #  short_hostname = node['system']['short_hostname']
+  # end
   template zone_file do
     not_if { File.exist?(zone_file) }
     source 'zone_file.erb'
@@ -72,7 +71,7 @@ managed_domains.each do |dom|
     variables(
         domain: dom,
         host_entries: {
-          node['system']['short_hostname'] => node['ipaddress']
+          node['hostname'] => node['ipaddress']
         }
         )
     action :create
@@ -82,13 +81,13 @@ managed_domains.each do |dom|
   end
 end
 
-# TODO: generate reverse zone files
+# TODO, generate reverse zone files
 # auto update zone file with host searched in the domain
 node['gitzone']['domains'].each do |dom|
   zone_file = ::File.join(zone_clon, dom)
   ruby_block 'update-zone-file' do
     block do
-      stamp = Time.now.strftime('%d/%m/%Y %H:%M:%S')
+      # stamp = Time.now.strftime('%d/%m/%Y %H:%M:%S')
       fe = Chef::Util::FileEdit.new(zone_file)
       if Chef::Config[:solo]
         Chef::Log.warn("#{cookbook_name} uses search - you are running a solo - thus skipping resolver configuration.")
@@ -98,7 +97,7 @@ node['gitzone']['domains'].each do |dom|
           fe.insert_line_if_no_match(/^#{n['hostname']}/, "#{n['hostname']}     A   #{n['ipaddress']}")
         end
       end
-      # TODO this practically update file each run - avoid that - fe.search_file_replace_line(/^;; Updated:.*/, ";; Updated: #{stamp}")
+      # TODO,this practically update file each run - avoid that - fe.search_file_replace_line(/^;; Updated:.*/, ";; Updated: #{stamp}")
       fe.write_file
     end
     retries 10
@@ -109,12 +108,12 @@ node['gitzone']['domains'].each do |dom|
   end
 end
 
-# TODO Create zone_file listing all 2nd level domains
+# TODO,Create zone_file listing all 2nd level domains
 #
 
 bash 'git_commit_zone_file' do
   cwd zone_clon
-  # FIXME - ownership & execution under gitzone user
+  # FIXME,- ownership & execution under gitzone user
   # user zone_user
   # group zone_group
   code <<-EOF

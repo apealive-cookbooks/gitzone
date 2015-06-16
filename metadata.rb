@@ -30,4 +30,4 @@ attribute 'gitzone/user',
           description: 'Gitzone user system account',
           default: 'gitzone'
 
-# TODO document other attributes
+# TODO, document other attributes
