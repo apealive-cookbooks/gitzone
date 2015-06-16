@@ -13,14 +13,16 @@ if !node['gitzone']['admin'].nil? && !node['gitzone']['user_ssh_pub_keys'].nil? 
   zone_user = node['gitzone']['admin']
 end
 
-# commit first in zone_repo (ie: to avoid )
+# commit first in zone_repo (ie: to avoid fail later)
 execute 'gitzone-make-install' do
 # cwd gitzone_repo
   cmd =  "cd #{zone_repo}"
   cmd << '; echo ";# INIT \n" >> CHANGELOG.md'
+  #cmd << '; git config --global user.email "noreply@'+node[:fqdn].to_s+'"'
+  #cmd << '; git config --global user.name "gitzone"'
   cmd << '; git add CHANGELOG.md; git commit -m "init changelog;"'
   command cmd
-  ignore_failure false
+  ignore_failure true
   action :run
   only_if { ::File.exist?(zone_repo) }
 end
